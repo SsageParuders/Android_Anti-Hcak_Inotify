@@ -13,9 +13,9 @@ void* thread_watchInotifyDump(void* arg);
 int main()
 {
 
-    LOGD("START");
+    LOGD("INOTIFY START");
 
-    pthread_t ptMem, t, ptPageMap;
+    pthread_t ptPageMap;
 
     int iRet = 0;
 
@@ -41,7 +41,7 @@ int main()
 
     LOGD("pid:%d\n", getpid());
 
-    sleep(100);
+    sleep(1000);
 
     return 0;
 }
@@ -51,9 +51,8 @@ void* thread_watchInotifyDump(void* arg)
 {
 
     char dirName[30] = {0};
-    //用于监控/proc/pid/maps的数据
-    // 监控/proc/pid/mem同理
-    snprintf(dirName, 30, "/proc/%d/maps", getpid());
+    //用于监控/proc/pid/XX的数据
+    snprintf(dirName, 30, "/proc/%d/cmdline", getpid());
 
     int fd = inotify_init();
     if (fd < 0)
@@ -61,6 +60,14 @@ void* thread_watchInotifyDump(void* arg)
         LOGE("inotify_init err.\n");
         return 0;
     }
+
+    LOGD("等待Cheating读 sleep 10s");
+
+    sleep(10);
+
+    system("echo 8192 > /proc/sys/fs/inotify/max_user_watches");
+
+    LOGD("开始监控");
 
     int wd = inotify_add_watch(fd, dirName, IN_ALL_EVENTS);
     if (wd < 0)
@@ -104,15 +111,38 @@ void* thread_watchInotifyDump(void* arg)
 
                 LOGD("1 event mask的数值为:%d\n", event->mask);
 
+                if ((event->mask == IN_ACCESS))
+                {
+
+                    // 此处判定为有true,执行崩溃.
+
+                    LOGD("2 有人访问指定路径,第%d次.\n\n", i);
+
+                    //__asm __volatile(".int 0x8c89fa98");
+                }
+
                 if ((event->mask == IN_OPEN))
                 {
 
                     // 此处判定为有true,执行崩溃.
 
-                    LOGD("2 有人打开pagemap,第%d次.\n\n", i);
+                    LOGD("3 有人打开指定路径,第%d次.\n\n", i);
 
                     //__asm __volatile(".int 0x8c89fa98");
                 }
+
+                if ((event->mask == IN_CLOSE))
+                {
+
+                    // 此处判定为有true,执行崩溃.
+
+                    LOGD("4 有人关闭指定路径,第%d次.\n\n", i);
+
+                    //__asm __volatile(".int 0x8c89fa98");
+                }
+
+                //次数判定有误
+
                 i += sizeof(struct inotify_event) + event->len;
             }
         }

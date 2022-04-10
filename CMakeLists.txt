@@ -23,4 +23,5 @@ set(CMAKE_CXX_FLAGS "-fno-rtti -fno-exceptions -DNDEBUG -fvisibility=hidden -Wno
 
 ##################### ⬇子模块设置⬇ #####################
 add_subdirectory(Inotify)
+add_subdirectory(Cheating)
 ##################### ⬆子模块设置⬆ #####################
