@@ -65,7 +65,7 @@ void* thread_watchInotifyDump(void* arg)
 
     sleep(10);
 
-    system("echo 8192 > /proc/sys/fs/inotify/max_user_watches");
+    system("echo 8192 > /proc/sys/fs/inotify/max_user_watches");//每个真实用户 ID 创建的监控项数量的限制值
 
     LOGD("开始监控");
 
@@ -82,6 +82,7 @@ void* thread_watchInotifyDump(void* arg)
     const int buflen = sizeof(struct inotify_event) * 0x100;
     char buf[buflen] = {0};
     fd_set readfds;
+    int count[5] = {0};
 
     while (1)
     {
@@ -109,39 +110,28 @@ void* thread_watchInotifyDump(void* arg)
 
                 struct inotify_event *event = (struct inotify_event *)&buf[i];
 
-                LOGD("1 event mask的数值为:%d\n", event->mask);
+                LOGD("event mask:%d\n", event->mask);
 
-                if ((event->mask == IN_ACCESS))
+                if ((event->mask & IN_ACCESS))
                 {
 
-                    // 此处判定为有true,执行崩溃.
-
-                    LOGD("2 有人访问指定路径,第%d次.\n\n", i);
+                    ++count[0];
+                    LOGD("1.IN_ACCESS,第%d次.\n\n", count[0]);
 
                     //__asm __volatile(".int 0x8c89fa98");
                 }
 
-                if ((event->mask == IN_OPEN))
+                if ((event->mask & IN_OPEN))
                 {
-
-                    // 此处判定为有true,执行崩溃.
-
-                    LOGD("3 有人打开指定路径,第%d次.\n\n", i);
-
-                    //__asm __volatile(".int 0x8c89fa98");
+                     ++count[1];
+                    LOGD("2.IN_OPEN,第%d次.\n\n",  count[1]);
                 }
 
-                if ((event->mask == IN_CLOSE))
+                if ((event->mask & IN_CLOSE))
                 {
-
-                    // 此处判定为有true,执行崩溃.
-
-                    LOGD("4 有人关闭指定路径,第%d次.\n\n", i);
-
-                    //__asm __volatile(".int 0x8c89fa98");
+                     ++count[2];
+                    LOGD("3.IN_CLOSE,第%d次.\n\n", count[2]);
                 }
-
-                //次数判定有误
 
                 i += sizeof(struct inotify_event) + event->len;
             }

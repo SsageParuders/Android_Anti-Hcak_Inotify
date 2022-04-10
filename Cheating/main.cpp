@@ -10,7 +10,7 @@
 
 #include "./include/mlog.h"
 
-int readCmdline(const char *name, int pid);
+int cmpCmdline(const char *shell, int pid);//如果命令相同,返回PID | 否则-1
 
 //示例
 int main(int args, char **argvs)
@@ -18,14 +18,14 @@ int main(int args, char **argvs)
 
     LOGD("CHEATING START");
 
-    system("echo 0 > /proc/sys/fs/inotify/max_user_watches");
+    system("echo 0 > /proc/sys/fs/inotify/max_user_watches");//每个真实用户 ID 创建的监控项数量的限制值
 
-    LOGD("Game PID: %d", readCmdline("Inotify", atoi(argvs[1])));
+    LOGD("Game PID: %d", cmpCmdline("./Inotify", atoi(argvs[1])));
 
     return 0;
 }
 
-int readCmdline(const char *name, int pid)
+int cmpCmdline(const char *shell, int pid)
 {
     FILE *fp;
     DIR *dir;
@@ -33,7 +33,7 @@ int readCmdline(const char *name, int pid)
     char cmdline[256];
     struct dirent *entry;
     dir = opendir("/proc");
-    while ((entry = readdir(dir)) != NULL)
+    if ((entry = readdir(dir)) != NULL)
     {
         sprintf(filename, "/proc/%d/cmdline", pid);
         fp = fopen(filename, "r");
@@ -45,7 +45,7 @@ int readCmdline(const char *name, int pid)
             fgets(cmdline, sizeof(cmdline), fp);
             fclose(fp);
             LOGD("cmdline:%s", cmdline);
-            if (strcmp(name, cmdline) == 0)
+            if (0 == strcmp(shell, cmdline))
             {
                 return pid;
             }
