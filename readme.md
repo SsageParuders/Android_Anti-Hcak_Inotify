@@ -22,3 +22,5 @@ ps top 都会触发 IN_OPEN | IN_ACCESS
 | 启动应用前 | inotify_add_watch err |
 | 启动应用后 | IN_OPEN \| IN_ACCESS  |
 | 获取文件句柄后 | IN_ACCESS|
+
+#END
