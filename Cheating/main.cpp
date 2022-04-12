@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 
-#include "./include/mlog.h"
+#include <mlog.h>
 
 int cmpCmdline(const char *shell, int pid);//如果命令相同,返回PID | 否则-1
 

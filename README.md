@@ -13,14 +13,14 @@
 | root   | root   | 可检测 |
 | 用户   | root   | 可检测 |
 
-ps top 都会触发 IN_OPEN | IN_ACCESS
+`ps top pidof` 都会触发 IN_OPEN | IN_ACCESS
 
-## 修改/proc/sys/fs/inotify/max_user_watches为0
+## 绕过方案
+
+> 修改/proc/sys/fs/inotify/max_user_watches为0
 
 | 修改时间   | 结果                  |
 | ---------- | --------------------- |
 | 启动应用前 | inotify_add_watch err |
 | 启动应用后 | IN_OPEN \| IN_ACCESS  |
 | 获取文件句柄后 | IN_ACCESS|
-
-#END

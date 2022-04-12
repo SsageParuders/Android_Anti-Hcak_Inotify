@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#include "./include/mlog.h"
+#include <mlog.h>
 
 void* thread_watchInotifyDump(void* arg);
 
