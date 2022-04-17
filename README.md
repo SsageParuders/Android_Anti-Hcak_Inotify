@@ -15,6 +15,14 @@
 
 `ps top pidof` 都会触发 IN_OPEN | IN_ACCESS
 
+| 监控位置 | 系统行为是否触发 | ls /proc是否触发 |
+| ------ | ------ | ------ |
+| /proc|是|是|
+| /proc/pid|是|否 |
+|/proc/other process|inotify_add_watch err.|null|
+
+系统行为指, 软件前后台切换等
+
 ## 绕过方案
 
 > 修改/proc/sys/fs/inotify/max_user_watches为0
